@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>FPS Prototype Web</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main class="page-shell">
+    <header class="topbar">
+      <div class="brand"><span class="brand-mark">FP</span><span>FPS Prototype Web</span></div>
+      <div class="status" id="status">WEB BUILD</div>
+    </header>
+
+    <section class="game-frame" aria-label="FPS game">
+      <canvas id="unity-canvas" width="960" height="600" tabindex="-1"></canvas>
+      <div class="loading-panel" id="loading-panel">
+        <div class="loading-kicker">TRAINING RANGE // ONLINE</div>
+        <h1>Loading prototype</h1>
+        <p id="loading-message">Preparing the range...</p>
+        <div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div>
+        <div class="progress-label" id="progress-label">0%</div>
+      </div>
+      <div class="error-panel hidden" id="error-panel">
+        <h1>Unable to load the game</h1>
+        <p id="error-message">Please refresh the page and try again.</p>
+        <button id="retry-button" type="button">Retry</button>
+      </div>
+    </section>
+
+    <section class="controls-panel">
+      <div><strong>Click the game</strong> to capture the mouse and start playing.</div>
+      <div class="controls-list"><span><b>WASD</b> Move</span><span><b>Mouse</b> Look</span><span><b>LMB</b> Fire / Knife</span><span><b>RMB</b> Aim / Heavy Knife</span><span><b>1 2 3</b> Weapons</span><span><b>R</b> Reload</span><span><b>Esc</b> Release mouse</span></div>
+    </section>
+  </main>
+  <script>
+    const canvas = document.querySelector('#unity-canvas');
+    const loadingPanel = document.querySelector('#loading-panel');
+    const errorPanel = document.querySelector('#error-panel');
+    const progressFill = document.querySelector('#progress-fill');
+    const progressLabel = document.querySelector('#progress-label');
+    const loadingMessage = document.querySelector('#loading-message');
+    const status = document.querySelector('#status');
+    const errorMessage = document.querySelector('#error-message');
+    const retryButton = document.querySelector('#retry-button');
+
+    const buildUrl = 'Build';
+    const loaderUrl = buildUrl + '/66067e675da5b4fb31da5f2b7e08f6d4.loader.js';
+    const config = {
+      dataUrl: buildUrl + '/33e9cc46babad4291975ff3484434378.data.unityweb',
+      frameworkUrl: buildUrl + '/ae0a56a7db938492edbcba0936e0fd92.framework.js.unityweb',
+      codeUrl: buildUrl + '/3f1e2d0712a1b9a078e2f42ce6a6d22e.wasm.unityweb',
+      streamingAssetsUrl: 'StreamingAssets',
+      companyName: "Original FPS Prototype",
+      productName: "FPS Prototype Web",
+      productVersion: "0.1.0"
+    };
+
+    function showError(message) {
+      loadingPanel.classList.add('hidden');
+      errorPanel.classList.remove('hidden');
+      errorMessage.textContent = message || 'The WebGL player could not be started.';
+      status.textContent = 'LOAD ERROR';
+      status.classList.add('error');
+    }
+
+    function startGame() {
+      loadingPanel.classList.remove('hidden');
+      errorPanel.classList.add('hidden');
+      status.textContent = 'LOADING';
+      status.classList.remove('error');
+      progressFill.style.width = '0%';
+      progressLabel.textContent = '0%';
+      loadingMessage.textContent = 'Preparing the range...';
+      const oldLoader = document.querySelector('#unity-loader');
+      if (oldLoader) oldLoader.remove();
+      const script = document.createElement('script');
+      script.id = 'unity-loader';
+      script.src = loaderUrl;
+      script.onload = function () {
+        if (typeof createUnityInstance !== 'function') {
+          showError('The Unity loader was found, but could not be initialized.');
+          return;
+        }
+        createUnityInstance(canvas, config, function (progress) {
+          const percent = Math.round(progress * 100);
+          progressFill.style.width = percent + '%';
+          progressLabel.textContent = percent + '%';
+          loadingMessage.textContent = percent < 100 ? 'Loading range data...' : 'Starting game...';
+        }).then(function () {
+          loadingPanel.classList.add('hidden');
+          status.textContent = 'READY';
+        }).catch(function (message) {
+          showError(message);
+        });
+      };
+      script.onerror = function () { showError('The Unity loader file could not be downloaded.'); };
+      document.body.appendChild(script);
+    }
+
+    retryButton.addEventListener('click', startGame);
+    startGame();
+  </script>
+</body>
+</html>
