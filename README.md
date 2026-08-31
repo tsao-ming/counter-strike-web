@@ -8,6 +8,7 @@ Use the top-right menu to switch between:
 
 - `PLAY FPS`: playable training range
 - `RIFLE`, `PISTOL`, `KNIFE`: interactive 3D weapon showcase
+- `SOLDIER`: interactive 3D sci-fi soldier showcase (static model)
 
 FPS controls:
 
