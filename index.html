@@ -56,7 +56,7 @@
     const help = document.getElementById('help');
     const labels = {
       play: {
-        path: 'Game/index.html?v=grounding-sensitivity-20260906',
+        path: 'Game/index.html?v=blank-scene-fix-20260907-1255',
         eyebrow: 'TRAINING RANGE // PLAYABLE WEBGL',
         title: 'Original tactical FPS prototype',
         subtitle: 'WASD move, mouse look, and test the rifle, pistol, and knife.',
@@ -146,7 +146,7 @@
         loading.classList.add('hidden');
         connection.textContent = 'READY';
       };
-      frame.src = 'Game/index.html?map=' + encodeURIComponent(normalized) + '&v=grounding-sensitivity-20260906';
+      frame.src = 'Game/index.html?map=' + encodeURIComponent(normalized) + '&v=blank-scene-fix-20260907-1255';
       if (replaceHistory) history.replaceState({}, '', '?mode=play&map=' + encodeURIComponent(normalized));
     }
 
