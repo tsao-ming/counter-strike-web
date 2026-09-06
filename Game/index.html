@@ -46,12 +46,30 @@
     const errorMessage = document.querySelector('#error-message');
     const retryButton = document.querySelector('#retry-button');
 
+    function releaseBrowserPointerLock() {
+      // Unity normally releases this when Esc is pressed, but a tab close,
+      // tab switch, or iframe navigation can skip Unity's input update.
+      if (document.pointerLockElement && document.exitPointerLock) {
+        document.exitPointerLock();
+      }
+      if (canvas) canvas.blur();
+      document.body.style.cursor = 'default';
+      if (canvas) canvas.style.cursor = 'default';
+    }
+
+    window.addEventListener('blur', releaseBrowserPointerLock);
+    window.addEventListener('pagehide', releaseBrowserPointerLock);
+    window.addEventListener('beforeunload', releaseBrowserPointerLock);
+    document.addEventListener('visibilitychange', function () {
+      if (document.visibilityState !== 'visible') releaseBrowserPointerLock();
+    });
+
     const buildUrl = 'Build';
-    const loaderUrl = buildUrl + '/055fcfb8fc7bc234fd15b78f6f43df5a.loader.js';
+    const loaderUrl = buildUrl + '/5c126eae5944c9ea6cd3128f7d8a1ea9.loader.js';
     const config = {
-      dataUrl: buildUrl + '/b52d20ed97e2a87f3504bb66287ddaaa.data.unityweb',
+      dataUrl: buildUrl + '/96795497ad4e6a65c7a400094ed84f98.data.unityweb',
       frameworkUrl: buildUrl + '/ae0a56a7db938492edbcba0936e0fd92.framework.js.unityweb',
-      codeUrl: buildUrl + '/a0fc5408fc6dacc3ea730de39278af27.wasm.unityweb',
+      codeUrl: buildUrl + '/3f73f53f5432632a6f03efd461fc8cfd.wasm.unityweb',
       streamingAssetsUrl: 'StreamingAssets',
       companyName: "Original FPS Prototype",
       productName: "FPS Prototype Web",
