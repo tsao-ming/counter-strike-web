@@ -56,11 +56,11 @@
     const help = document.getElementById('help');
     const labels = {
       play: {
-        path: 'Game/index.html?v=maps-navmesh-20260906',
+        path: 'Game/index.html?v=grounding-sensitivity-20260906',
         eyebrow: 'TRAINING RANGE // PLAYABLE WEBGL',
         title: 'Original tactical FPS prototype',
         subtitle: 'WASD move, mouse look, and test the rifle, pistol, and knife.',
-        help: 'Click inside the game to capture the mouse.'
+      help: 'Click inside the game to capture the mouse. Press Esc for settings.'
       },
       rifle: {
         path: 'Showcase/index.html?weapon=rifle&v=respawn-visual-20260904',
@@ -139,14 +139,14 @@
       eyebrow.textContent = 'TRAINING RANGE // ' + normalized.toUpperCase();
       title.textContent = selected.name;
       subtitle.textContent = selected.subtitle;
-      help.textContent = 'Click inside the game to capture the mouse.';
+      help.textContent = 'Click inside the game to capture the mouse. Press Esc for settings.';
       connection.textContent = 'LOADING';
       loading.classList.remove('hidden');
       frame.onload = () => {
         loading.classList.add('hidden');
         connection.textContent = 'READY';
       };
-      frame.src = 'Game/index.html?map=' + encodeURIComponent(normalized) + '&v=maps-navmesh-20260906';
+      frame.src = 'Game/index.html?map=' + encodeURIComponent(normalized) + '&v=grounding-sensitivity-20260906';
       if (replaceHistory) history.replaceState({}, '', '?mode=play&map=' + encodeURIComponent(normalized));
     }
 
