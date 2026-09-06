@@ -15,6 +15,10 @@
       </a>
       <nav class="mode-menu" aria-label="網站模式">
         <button type="button" data-mode="play">PLAY FPS</button>
+        <button type="button" data-map="training">TRAINING</button>
+        <button type="button" data-map="warehouse">WAREHOUSE</button>
+        <button type="button" data-map="courtyard">COURTYARD</button>
+        <button type="button" data-map="research">RESEARCH</button>
         <button type="button" data-mode="rifle">RIFLE</button>
         <button type="button" data-mode="pistol">PISTOL</button>
         <button type="button" data-mode="knife">KNIFE</button>
@@ -52,7 +56,7 @@
     const help = document.getElementById('help');
     const labels = {
       play: {
-        path: 'Game/index.html?v=ammo-objective-hitbox-20260905',
+        path: 'Game/index.html?v=maps-navmesh-20260906',
         eyebrow: 'TRAINING RANGE // PLAYABLE WEBGL',
         title: 'Original tactical FPS prototype',
         subtitle: 'WASD move, mouse look, and test the rifle, pistol, and knife.',
@@ -94,6 +98,10 @@
         button.classList.toggle('selected', button.dataset.mode === (labels[mode] ? mode : 'play'));
         button.setAttribute('aria-pressed', button.classList.contains('selected'));
       });
+      document.querySelectorAll('[data-map]').forEach(button => {
+        button.classList.remove('selected');
+        button.setAttribute('aria-pressed', 'false');
+      });
       eyebrow.textContent = selected.eyebrow;
       title.textContent = selected.title;
       subtitle.textContent = selected.subtitle;
@@ -108,12 +116,51 @@
       if (replaceHistory) history.replaceState({}, '', '?mode=' + (labels[mode] ? mode : 'play'));
     }
 
+    const maps = {
+      training: { name: 'Training Range', subtitle: 'Classic training lanes with readable cover and two plant sites.' },
+      warehouse: { name: 'Industrial Warehouse', subtitle: 'Long warehouse aisles, stacked crates, and exposed routes.' },
+      courtyard: { name: 'Neon Courtyard', subtitle: 'Open square with a central block and flank paths.' },
+      research: { name: 'Research Facility', subtitle: 'Compact corridors and crossfire angles inside a blue-black lab.' }
+    };
+
+    function setMap(mapId, replaceHistory) {
+      const selected = maps[mapId] || maps.training;
+      const normalized = maps[mapId] ? mapId : 'training';
+      document.querySelectorAll('[data-mode]').forEach(button => {
+        const isPlay = button.dataset.mode === 'play';
+        button.classList.toggle('selected', isPlay);
+        button.setAttribute('aria-pressed', isPlay ? 'true' : 'false');
+      });
+      document.querySelectorAll('[data-map]').forEach(button => {
+        const isSelected = button.dataset.map === normalized;
+        button.classList.toggle('selected', isSelected);
+        button.setAttribute('aria-pressed', isSelected ? 'true' : 'false');
+      });
+      eyebrow.textContent = 'TRAINING RANGE // ' + normalized.toUpperCase();
+      title.textContent = selected.name;
+      subtitle.textContent = selected.subtitle;
+      help.textContent = 'Click inside the game to capture the mouse.';
+      connection.textContent = 'LOADING';
+      loading.classList.remove('hidden');
+      frame.onload = () => {
+        loading.classList.add('hidden');
+        connection.textContent = 'READY';
+      };
+      frame.src = 'Game/index.html?map=' + encodeURIComponent(normalized) + '&v=maps-navmesh-20260906';
+      if (replaceHistory) history.replaceState({}, '', '?mode=play&map=' + encodeURIComponent(normalized));
+    }
+
     document.querySelectorAll('[data-mode]').forEach(button => {
       button.addEventListener('click', () => setMode(button.dataset.mode, true));
     });
+    document.querySelectorAll('[data-map]').forEach(button => {
+      button.addEventListener('click', () => setMap(button.dataset.map, true));
+    });
 
     const initialMode = new URLSearchParams(location.search).get('mode') || 'play';
-    setMode(initialMode, false);
+    const initialMap = new URLSearchParams(location.search).get('map');
+    if (initialMode === 'play' && initialMap) setMap(initialMap, false);
+    else setMode(initialMode, false);
   </script>
 </body>
 </html>
